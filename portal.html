@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Portal — HMB Ventures</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.portal-wrapper{min-height:100vh;background:var(--ice);display:flex;align-items:center;justify-content:center;padding:100px 5% 60px}
+.portal-box{background:#fff;border-radius:24px;padding:48px 44px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(13,21,71,.1)}
+.portal-box .logo-wrap{text-align:center;margin-bottom:28px}
+.portal-box .logo-wrap img{height:50px;object-fit:contain}
+.portal-box h2{font-family:'Space Grotesk',sans-serif;font-size:1.55rem;font-weight:700;color:var(--dark);text-align:center;margin-bottom:6px}
+.portal-box .sub{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:28px}
+.portal-tabs{display:flex;gap:0;margin-bottom:26px;border:2px solid var(--ice);border-radius:10px;overflow:hidden}
+.portal-tab{flex:1;padding:11px;text-align:center;font-weight:700;font-size:.88rem;color:var(--muted);cursor:pointer;background:transparent;border:none;font-family:inherit;transition:all .2s}
+.portal-tab.active{background:var(--navy);color:#fff}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-group label{font-size:.8rem;font-weight:700;color:var(--dark)}
+.form-group input{padding:12px 15px;border:2px solid var(--ice);border-radius:10px;font-family:inherit;font-size:.9rem;color:var(--dark);outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(26,43,143,.08)}
+.form-group input.error{border-color:var(--pink)}
+.field-error{color:var(--pink);font-size:.75rem;font-weight:600}
+.btn-portal{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:6px}
+.btn-portal:hover{background:var(--pink)}
+.portal-msg{font-size:.85rem;font-weight:600;text-align:center;margin-bottom:10px;min-height:20px}
+.portal-msg.success{color:#16a34a}
+.portal-msg.error{color:var(--pink)}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:.8rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--ice)}
+.btn-wa{width:100%;padding:13px;background:#25D366;color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.forgot{text-align:center;margin-top:14px;font-size:.82rem;color:var(--muted)}
+.forgot a{color:var(--navy);font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<nav id="navbar">
+  <a class="nav-logo" href="index.html"><img src="logo.png" alt="HMB Ventures"></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="index.html#contact">Get Started →</a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="portal-wrapper">
+  <div class="portal-box">
+    <div class="logo-wrap"><img src="logo.png" alt="HMB Ventures"></div>
+    <h2 id="portal-title">Welcome Back</h2>
+    <p class="sub" id="portal-sub">Sign in to access your project dashboard</p>
+
+    <div class="portal-tabs">
+      <button class="portal-tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="portal-tab" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <p class="portal-msg" id="portal-msg"></p>
+
+    <!-- LOGIN FORM -->
+    <div id="login-panel">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn-portal" onclick="handleLogin()">Sign In →</button>
+      <div class="divider">or</div>
+      <a class="btn-wa" href="https://wa.me/2348127450087?text=Hi!%20I%20need%20access%20to%20the%20HMB%20Ventures%20client%20portal." target="_blank">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="white"><path d="M23.5 8.5A10.44 10.44 0 0016 5.5C10.2 5.5 5.5 10.2 5.5 16c0 1.84.48 3.63 1.39 5.22L5.5 26.5l5.41-1.42A10.44 10.44 0 0016 26.5c5.8 0 10.5-4.7 10.5-10.5 0-2.8-1.09-5.43-3-7.5z"/></svg>
+        Continue via WhatsApp
+      </a>
+      <p class="forgot">Forgot password? <a href="https://wa.me/2348127450087?text=Hi!%20I%20forgot%20my%20portal%20password." target="_blank">Reset via WhatsApp</a></p>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-panel" style="display:none">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="signup-name" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="signup-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Company / Business Name</label>
+        <input type="text" id="signup-company" placeholder="Acme Corp (optional)">
+      </div>
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" id="signup-password" placeholder="Min. 6 characters">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password *</label>
+        <input type="password" id="signup-confirm" placeholder="Repeat password">
+      </div>
+      <button class="btn-portal" onclick="handleSignup()">Create Account →</button>
+      <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:12px;">By creating an account you agree to our <a href="terms.html" style="color:var(--navy);">Terms of Service</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Simple localStorage-based auth ──
+function getUsers() { return JSON.parse(localStorage.getItem('hmb_users') || '[]'); }
+function saveUsers(u) { localStorage.setItem('hmb_users', JSON.stringify(u)); }
+function setSession(user) { sessionStorage.setItem('hmb_user', JSON.stringify(user)); }
+
+function switchTab(tab) {
+  document.querySelectorAll('.portal-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('login-panel').style.display = tab==='login'?'block':'none';
+  document.getElementById('signup-panel').style.display = tab==='signup'?'block':'none';
+  document.getElementById('portal-msg').textContent = '';
+  if(tab==='login'){document.getElementById('portal-title').textContent='Welcome Back';document.getElementById('portal-sub').textContent='Sign in to access your project dashboard';}
+  else{document.getElementById('portal-title').textContent='Create Account';document.getElementById('portal-sub').textContent='Join HMB Ventures client portal';}
+}
+
+function showMsg(msg, type) {
+  const el = document.getElementById('portal-msg');
+  el.textContent = msg; el.className = 'portal-msg ' + type;
+}
+
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if(!email || !pass) { showMsg('Please fill in all fields.', 'error'); return; }
+  const users = getUsers();
+  const user  = users.find(u => u.email === email && u.password === pass);
+  if(user) {
+    showMsg('✅ Welcome back, ' + user.name + '!', 'success');
+    setSession(user);
+    setTimeout(() => window.location.href = 'portal-dashboard.html', 1000);
+  } else {
+    showMsg('❌ Incorrect email or password.', 'error');
+  }
+}
+
+function handleSignup() {
+  const name    = document.getElementById('signup-name').value.trim();
+  const email   = document.getElementById('signup-email').value.trim();
+  const company = document.getElementById('signup-company').value.trim();
+  const pass    = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+
+  if(!name)  { showMsg('Please enter your full name.', 'error'); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('Please enter a valid email.', 'error'); return; }
+  if(pass.length < 6) { showMsg('Password must be at least 6 characters.', 'error'); return; }
+  if(pass !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
+
+  const users = getUsers();
+  if(users.find(u => u.email === email)) { showMsg('An account with this email already exists.', 'error'); return; }
+
+  const newUser = { name, email, company, password: pass, joined: new Date().toLocaleDateString(), projects: [], messages: [] };
+  users.push(newUser);
+  saveUsers(users);
+  setSession(newUser);
+  showMsg('✅ Account created! Redirecting...', 'success');
+  setTimeout(() => window.location.href = 'portal-dashboard.html', 1200);
+}
+
+// Nav hamburger
+const hamburger = document.getElementById('hamburger');
+if(hamburger) hamburger.addEventListener('click', () => document.body.classList.toggle('mobile-menu-open'));
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 40);
+});
+</script>
+</body>
+</html>

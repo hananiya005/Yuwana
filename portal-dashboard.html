@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — HMB Ventures</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .dash-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; padding-top: 72px; }
+  .dash-sidebar { background: var(--dark); padding: 32px 0; position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; }
+  .dash-sidebar .user-card { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 20px; }
+  .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--navy), var(--pink)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; }
+  .user-name { font-weight: 700; color: white; font-size: .95rem; }
+  .user-role { font-size: .78rem; color: rgba(255,255,255,.45); }
+  .sidebar-nav { list-style: none; }
+  .sidebar-nav li a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; font-size: .88rem; font-weight: 600; color: rgba(255,255,255,.5); text-decoration: none; transition: all .2s; border-left: 3px solid transparent; }
+  .sidebar-nav li a:hover, .sidebar-nav li a.active { color: white; background: rgba(255,255,255,.06); border-left-color: var(--pink); }
+  .sidebar-nav li a span.icon { font-size: 1rem; }
+  .dash-main { background: #f8fafc; padding: 40px 40px; }
+  .dash-welcome { margin-bottom: 36px; }
+  .dash-welcome h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+  .dash-welcome p { color: var(--muted); font-size: .95rem; }
+  .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 18px; margin-bottom: 36px; }
+  .dash-card { background: white; border-radius: var(--radius); padding: 24px 22px; border: 1px solid #e2e8f0; }
+  .dash-card-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 8px; }
+  .dash-card-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.9rem; font-weight: 700; color: var(--dark); }
+  .dash-card-sub { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .dash-section { background: white; border-radius: var(--radius); border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
+  .dash-section-head { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .dash-section-head h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .progress-list { padding: 0; }
+  .progress-item { padding: 18px 24px; border-bottom: 1px solid #f8fafc; }
+  .progress-item:last-child { border-bottom: none; }
+  .progress-item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-item-name { font-weight: 600; font-size: .9rem; color: var(--dark); }
+  .progress-pct { font-size: .82rem; font-weight: 700; color: var(--navy); }
+  .progress-bar { height: 6px; background: var(--ice); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--navy), var(--pink)); transition: width 1s ease; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .badge-green { background: #dcfce7; color: #16a34a; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-yellow { background: #fef9c3; color: #a16207; }
+  .badge-pink { background: #fce7f3; color: #be185d; }
+  .message-list { padding: 0; }
+  .message-item { padding: 18px 24px; border-bottom: 1px solid #f8fafc; display: flex; gap: 14px; }
+  .message-item:last-child { border-bottom: none; }
+  .msg-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; color: white; font-size: .78rem; font-weight: 700; flex-shrink: 0; }
+  .msg-body { flex: 1; }
+  .msg-from { font-size: .85rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+  .msg-text { font-size: .85rem; color: #475569; line-height: 1.5; }
+  .msg-time { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+  .logout-btn { background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.5); padding: 10px 24px; font-family: inherit; font-size: .85rem; cursor: pointer; text-align: left; width: 100%; transition: all .2s; }
+  .logout-btn:hover { background: rgba(232,51,109,.15); color: var(--pink); }
+  @media (max-width: 800px) { .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { display: none; } .dash-main { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<nav id="navbar">
+  <a class="nav-logo" href="index.html"><img src="logo.png" alt="HMB Ventures"></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="https://wa.me/2348127450087" target="_blank">WhatsApp Us</a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">DC</div>
+      <div class="user-name" id="sidebar-name">Demo Client</div>
+      <div class="user-role">Active Client</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="#" class="active"><span class="icon">📊</span> Dashboard</a></li>
+      <li><a href="#"><span class="icon">🚀</span> My Projects</a></li>
+      <li><a href="#"><span class="icon">📁</span> Files & Docs</a></li>
+      <li><a href="#"><span class="icon">💬</span> Messages</a></li>
+      <li><a href="#"><span class="icon">🧾</span> Invoices</a></li>
+      <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+      <li style="margin-top:auto;padding-top:20px;">
+        <a href="https://wa.me/2348127450087?text=Hi%20HMB%20Ventures!%20I%20need%20support." target="_blank"><span class="icon">🆘</span> Get Support</a>
+      </li>
+    </ul>
+    <button class="logout-btn" id="logout-btn">🚪 Sign Out</button>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-welcome">
+      <h1>Welcome back, <span id="dash-username">Demo Client</span> 👋</h1>
+      <p>Here's a summary of your active projects and latest updates.</p>
+    </div>
+
+    <div class="dash-cards">
+      <div class="dash-card">
+        <div class="dash-card-label">Active Projects</div>
+        <div class="dash-card-value">2</div>
+        <div class="dash-card-sub">1 in development</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Overall Progress</div>
+        <div class="dash-card-value">68%</div>
+        <div class="dash-card-sub">Avg. across projects</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Open Messages</div>
+        <div class="dash-card-value">3</div>
+        <div class="dash-card-sub">From HMB team</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Next Milestone</div>
+        <div class="dash-card-value" style="font-size:1.1rem;">July 5</div>
+        <div class="dash-card-sub">Beta delivery</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <h3>Project Progress</h3>
+        <a href="https://wa.me/2348127450087?text=Hi!%20I%20have%20a%20question%20about%20my%20project%20progress." target="_blank" style="font-size:.82rem;font-weight:700;color:var(--navy);text-decoration:none;">Ask a question →</a>
+      </div>
+      <div class="progress-list">
+        <div class="progress-item">
+          <div class="progress-item-head">
+            <div>
+              <div class="progress-item-name">AI Customer Support Bot</div>
+              <span class="badge badge-blue" style="margin-top:4px;">In Development</span>
+            </div>
+            <div class="progress-pct">75%</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-item-head">
+            <div>
+              <div class="progress-item-name">Sales Automation Pipeline</div>
+              <span class="badge badge-yellow" style="margin-top:4px;">In Review</span>
+            </div>
+            <div class="progress-pct">60%</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <h3>Latest Messages from HMB Team</h3>
+        <a href="https://wa.me/2348127450087" target="_blank" style="font-size:.82rem;font-weight:700;color:var(--navy);text-decoration:none;">Reply on WhatsApp →</a>
+      </div>
+      <div class="message-list">
+        <div class="message-item">
+          <div class="msg-avatar">HMB</div>
+          <div class="msg-body">
+            <div class="msg-from">HMB Ventures Team</div>
+            <div class="msg-text">The chatbot integration with your CRM is complete. We're running final tests today and will send you a demo link tomorrow.</div>
+            <div class="msg-time">Today, 10:32 AM</div>
+          </div>
+        </div>
+        <div class="message-item">
+          <div class="msg-avatar">HMB</div>
+          <div class="msg-body">
+            <div class="msg-from">HMB Ventures Team</div>
+            <div class="msg-text">Reminder: your weekly sprint review call is scheduled for Friday at 3PM WAT. We'll be demoing the new automation flows.</div>
+            <div class="msg-time">Yesterday, 4:15 PM</div>
+          </div>
+        </div>
+        <div class="message-item">
+          <div class="msg-avatar">HMB</div>
+          <div class="msg-body">
+            <div class="msg-from">HMB Ventures Team</div>
+            <div class="msg-text">We've uploaded the latest design mockups to the shared folder. Please review and leave comments before Thursday.</div>
+            <div class="msg-time">Jun 20, 11:00 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // Check auth
+  const user = JSON.parse(sessionStorage.getItem('hmb_user') || 'null');
+  if (!user) { window.location.href = 'portal.html'; }
+  else {
+    const name = user.name || 'Client';
+    const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase();
+    document.getElementById('dash-username').textContent = name;
+    document.getElementById('sidebar-name').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = initials;
+  }
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.removeItem('hmb_user');
+    window.location.href = 'portal.html';
+  });
+  // Sidebar nav active state
+  document.querySelectorAll('.sidebar-nav a').forEach(a => {
+    a.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') e.preventDefault();
+      document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

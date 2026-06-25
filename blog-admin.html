@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Admin — HMB Ventures</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{background:#f8fafc}
+.admin-nav{position:fixed;top:0;left:0;right:0;height:64px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 5%;z-index:100}
+.admin-nav img{height:36px;filter:brightness(0) invert(1)}
+.admin-nav-right{display:flex;align-items:center;gap:16px}
+.admin-nav span{color:rgba(255,255,255,.6);font-size:.85rem}
+.admin-nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.85rem;font-weight:600;transition:color .2s}
+.admin-nav a:hover{color:#fff}
+.admin-body{padding:84px 5% 60px;max-width:1100px;margin:0 auto}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.admin-header h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--dark)}
+.btn-new{background:var(--pink);color:#fff;border:none;padding:12px 24px;border-radius:50px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-new:hover{background:#c41d5a}
+/* EDITOR */
+.editor-box{background:#fff;border-radius:16px;padding:32px;border:1px solid #e2e8f0;margin-bottom:32px;display:none}
+.editor-box.open{display:block}
+.editor-box h2{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:22px}
+.editor-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.e-group{display:flex;flex-direction:column;gap:6px}
+.e-group label{font-size:.78rem;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.04em}
+.e-group input,.e-group select,.e-group textarea{padding:11px 14px;border:2px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:.9rem;color:var(--dark);outline:none;transition:border-color .2s}
+.e-group input:focus,.e-group select:focus,.e-group textarea:focus{border-color:var(--navy)}
+.e-group textarea{min-height:200px;resize:vertical;line-height:1.7}
+.editor-actions{display:flex;gap:12px;margin-top:20px}
+.btn-publish{background:var(--navy);color:#fff;border:none;padding:12px 28px;border-radius:50px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-publish:hover{background:var(--pink)}
+.btn-cancel{background:#f1f5f9;color:var(--muted);border:none;padding:12px 24px;border-radius:50px;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+/* POSTS LIST */
+.posts-list{display:flex;flex-direction:column;gap:14px}
+.post-item{background:#fff;border-radius:14px;padding:22px 24px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.post-info h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:5px}
+.post-meta{font-size:.78rem;color:var(--muted)}
+.post-tag{display:inline-block;background:var(--ice);color:var(--navy);font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:50px;margin-right:8px;text-transform:uppercase}
+.post-actions{display:flex;gap:8px}
+.btn-edit{background:var(--ice);color:var(--navy);border:none;padding:8px 16px;border-radius:50px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-edit:hover{background:var(--navy);color:#fff}
+.btn-delete{background:#fee2e2;color:#dc2626;border:none;padding:8px 14px;border-radius:50px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-delete:hover{background:#dc2626;color:#fff}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .icon{font-size:3rem;margin-bottom:16px}
+.empty-state h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:8px}
+.toast{position:fixed;bottom:32px;right:32px;background:var(--dark);color:#fff;padding:14px 22px;border-radius:12px;font-size:.88rem;font-weight:600;border-left:4px solid var(--pink);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
+.toast.show{opacity:1}
+/* Login gate */
+.login-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ice);padding:20px}
+.login-card{background:#fff;border-radius:20px;padding:44px 40px;max-width:380px;width:100%;box-shadow:0 16px 48px rgba(13,21,71,.1);text-align:center}
+.login-card img{height:48px;object-fit:contain;margin-bottom:20px}
+.login-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--dark);margin-bottom:6px}
+.login-card p{color:var(--muted);font-size:.88rem;margin-bottom:24px}
+.admin-input{width:100%;padding:12px 15px;border:2px solid var(--ice);border-radius:10px;font-family:inherit;font-size:.9rem;margin-bottom:12px;outline:none;transition:border-color .2s;text-align:left}
+.admin-input:focus{border-color:var(--navy)}
+.btn-admin-login{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer}
+.admin-err{color:var(--pink);font-size:.82rem;font-weight:600;margin-bottom:10px}
+@media(max-width:600px){.editor-row{grid-template-columns:1fr}.post-item{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div id="login-gate" class="login-gate">
+  <div class="login-card">
+    <img src="logo.png" alt="HMB Ventures">
+    <h2>Blog Admin</h2>
+    <p>Sign in to manage your blog posts</p>
+    <p class="admin-err" id="admin-err"></p>
+    <input class="admin-input" type="email" id="admin-email" placeholder="Admin email">
+    <input class="admin-input" type="password" id="admin-pass" placeholder="Password">
+    <button class="btn-admin-login" onclick="adminLogin()">Sign In →</button>
+    <p style="font-size:.75rem;color:var(--muted);margin-top:16px;">Default: hmbventures@gmail.com / hmb@admin2025</p>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (hidden until login) -->
+<div id="admin-panel" style="display:none">
+  <div class="admin-nav">
+    <img src="logo.png" alt="HMB Ventures">
+    <div class="admin-nav-right">
+      <span id="admin-greeting">Hi, Admin</span>
+      <a href="blog.html" target="_blank">View Blog →</a>
+      <a href="#" onclick="adminLogout()">Sign Out</a>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <div class="admin-header">
+      <h1>📝 Blog Posts</h1>
+      <button class="btn-new" onclick="openEditor()">+ New Post</button>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="editor-box" id="editor-box">
+      <h2 id="editor-title">New Blog Post</h2>
+      <div class="editor-row">
+        <div class="e-group">
+          <label>Post Title *</label>
+          <input type="text" id="post-title" placeholder="e.g. How AI is transforming business">
+        </div>
+        <div class="e-group">
+          <label>Category *</label>
+          <select id="post-category">
+            <option value="">— Select category —</option>
+            <option>AI Agents</option>
+            <option>Automation</option>
+            <option>Chatbots</option>
+            <option>SaaS</option>
+            <option>Data</option>
+            <option>Strategy</option>
+            <option>Case Study</option>
+          </select>
+        </div>
+      </div>
+      <div class="editor-row">
+        <div class="e-group">
+          <label>Short Summary *</label>
+          <input type="text" id="post-summary" placeholder="1-2 sentence summary shown on blog page">
+        </div>
+        <div class="e-group">
+          <label>Read Time</label>
+          <input type="text" id="post-readtime" placeholder="e.g. 5 min read">
+        </div>
+      </div>
+      <div class="e-group" style="margin-bottom:16px">
+        <label>Full Article Content *</label>
+        <textarea id="post-content" placeholder="Write your full blog post here. You can use paragraphs and line breaks."></textarea>
+      </div>
+      <div class="editor-actions">
+        <button class="btn-publish" onclick="publishPost()">🚀 Publish Post</button>
+        <button class="btn-cancel" onclick="closeEditor()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- POSTS LIST -->
+    <div class="posts-list" id="posts-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_EMAIL = 'hmbventures@gmail.com';
+const ADMIN_PASS  = 'hmb@admin2025';
+let editingId = null;
+
+// ── AUTH ──
+function adminLogin() {
+  const email = document.getElementById('admin-email').value.trim();
+  const pass  = document.getElementById('admin-pass').value;
+  if(email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+    sessionStorage.setItem('hmb_admin', '1');
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderPosts();
+  } else {
+    document.getElementById('admin-err').textContent = '❌ Incorrect email or password.';
+  }
+}
+function adminLogout() {
+  sessionStorage.removeItem('hmb_admin');
+  location.reload();
+}
+// Auto-login if session exists
+if(sessionStorage.getItem('hmb_admin')) {
+  document.getElementById('login-gate').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+}
+
+// ── POSTS DATA ──
+function getPosts() { return JSON.parse(localStorage.getItem('hmb_blog_posts') || '[]'); }
+function savePosts(p) { localStorage.setItem('hmb_blog_posts', JSON.stringify(p)); }
+
+const ICONS = {'AI Agents':'🤖','Automation':'⚡','Chatbots':'💬','SaaS':'🚀','Data':'📊','Strategy':'🔐','Case Study':'📁'};
+
+function renderPosts() {
+  const posts = getPosts();
+  const el = document.getElementById('posts-list');
+  if(!posts.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">📝</div><h3>No posts yet</h3><p>Click "New Post" to publish your first blog article</p></div>';
+    return;
+  }
+  el.innerHTML = posts.slice().reverse().map(p => `
+    <div class="post-item">
+      <div class="post-info">
+        <h3>${p.title}</h3>
+        <div class="post-meta">
+          <span class="post-tag">${p.category}</span>
+          ${p.date} · ${p.readtime || '5 min read'}
+        </div>
+        <p style="font-size:.85rem;color:#64748b;margin-top:6px;max-width:500px">${p.summary}</p>
+      </div>
+      <div class="post-actions">
+        <button class="btn-edit" onclick="editPost('${p.id}')">✏️ Edit</button>
+        <button class="btn-delete" onclick="deletePost('${p.id}')">🗑️ Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openEditor(id) {
+  editingId = id || null;
+  const box = document.getElementById('editor-box');
+  box.classList.add('open');
+  document.getElementById('editor-title').textContent = id ? 'Edit Post' : 'New Blog Post';
+  if(id) {
+    const post = getPosts().find(p => p.id === id);
+    if(post) {
+      document.getElementById('post-title').value    = post.title;
+      document.getElementById('post-category').value = post.category;
+      document.getElementById('post-summary').value  = post.summary;
+      document.getElementById('post-readtime').value = post.readtime;
+      document.getElementById('post-content').value  = post.content;
+    }
+  } else {
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-category').value = '';
+    document.getElementById('post-summary').value = '';
+    document.getElementById('post-readtime').value = '';
+    document.getElementById('post-content').value = '';
+  }
+  box.scrollIntoView({behavior:'smooth'});
+}
+function closeEditor() {
+  document.getElementById('editor-box').classList.remove('open');
+  editingId = null;
+}
+function editPost(id) { openEditor(id); }
+function deletePost(id) {
+  if(!confirm('Delete this post? This cannot be undone.')) return;
+  const posts = getPosts().filter(p => p.id !== id);
+  savePosts(posts);
+  renderPosts();
+  showToast('🗑️ Post deleted');
+}
+
+function publishPost() {
+  const title    = document.getElementById('post-title').value.trim();
+  const category = document.getElementById('post-category').value;
+  const summary  = document.getElementById('post-summary').value.trim();
+  const readtime = document.getElementById('post-readtime').value.trim() || '5 min read';
+  const content  = document.getElementById('post-content').value.trim();
+
+  if(!title)    { showToast('⚠️ Please enter a title'); return; }
+  if(!category) { showToast('⚠️ Please select a category'); return; }
+  if(!summary)  { showToast('⚠️ Please add a summary'); return; }
+  if(!content)  { showToast('⚠️ Please write the article content'); return; }
+
+  const posts = getPosts();
+  const now   = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  if(editingId) {
+    const idx = posts.findIndex(p => p.id === editingId);
+    if(idx > -1) { posts[idx] = {...posts[idx], title, category, summary, readtime, content, updated: now}; }
+  } else {
+    posts.push({ id: Date.now().toString(), title, category, summary, readtime, content, date: now, icon: ICONS[category] || '📝' });
+  }
+  savePosts(posts);
+  closeEditor();
+  renderPosts();
+  showToast(editingId ? '✅ Post updated!' : '🚀 Post published!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+document.getElementById('admin-pass')?.addEventListener('keypress', e => { if(e.key==='Enter') adminLogin(); });
+
+if(sessionStorage.getItem('hmb_admin')) renderPosts();
+</script>
+</body>
+</html>
